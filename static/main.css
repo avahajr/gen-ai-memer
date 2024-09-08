@@ -13,6 +13,22 @@
   color: #6e6e6e; !important;
 }
 
+#result-placeholder{
+  background-color: rgba(230, 230, 230, 0.38) !important;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#preview-container {
+  display: flex;
+}
+#transform-arrow {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 /*
 Waiting Ajax stuff
 */
