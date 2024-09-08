@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+<br>
+
+{% block tab_content %}
+    <div class="tab-content">
+        <!-- Caption tab -->
+        <div class="tab-pane fade show active" id="caption" role="tabpanel" aria-labelledby="caption-tab">
+            <div class="container-fluid">
+                <br>
+                <div class="row">
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="card fluid">
+                                <div class="card-header">
+                                    <div class="text-center">Caption2Meme</div>
+                                </div>
+                                <div class="card-body ">
+                                    <label for="caption_input">Write a caption to generate a meme image for.</label>
+                                    <!-- Image upload input -->
+                                    <input type="text" id="caption_input" class="form-control mb-3">
+
+                                    <!-- Submit button -->
+                                    <div class="text-right">
+                                        <button id="submit_caption_btn" class="btn btn-success mt-3">Generate image
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="transform-arrow" class="col-2">
+                            <i class="bi bi-arrow-right" style="font-size:4rem"></i>
+                        </div>
+                        <div id="result-placeholder" class="col-5">
+                            <div id="spinner-div" class="pt-5">
+                                <div class="spinner-border text-primary" role="status">
+                                </div>
+                                <div class="gray">Nothing here yet.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="meme" role="tabpanel" aria-labelledby="meme-tab">
+            <div id="spinner-div" class="pt-5">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+            <div class="container-fluid">
+                <br>
+                <div class="row">
+                </div>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-5">
+                            <div class="card fluid">
+                                <div class="card-header">
+                                    <div class="text-center">Meme2Caption</div>
+                                </div>
+                                <div class="card-body ">
+                                    <p>Upload an image to generate a meme caption for. </p>
+                                    <!-- Image upload input -->
+                                    <input type="file" id="image_input" accept="image/*" class="form-control mb-3">
+
+                                    <!-- Image preview area -->
+                                    <div id="preview-container" class="d-none">
+                                        <div class="row mx-auto">
+                                            <div class="col">
+
+                                                <img id="preview-image" class="img-fluid " src=""
+                                                     alt="Image Preview">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Submit button -->
+                                    <div class="text-right">
+                                        <button id="submit_meme_btn" class="btn btn-success mt-3">Generate caption
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div id="transform-arrow" class="col-2">
+                            <i class="bi bi-arrow-right" style="font-size:4rem"></i>
+                        </div>
+                        <div id="result-placeholder" class="col-5">
+                            <div id="spinner-div" class="pt-5">
+                                <div class="spinner-border text-primary" role="status">
+                                </div>
+                                <div class="gray">Nothing here yet.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

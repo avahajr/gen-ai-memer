@@ -180,7 +180,7 @@ def get_keywords_for_headline(headline, summary):
 @app.route('/')
 def home():
     # you can pass in an existing article or a blank one.
-    return render_template('inputs.html', data=headline_data)
+    return render_template('tab_contents.html')
 
 
 if __name__ == '__main__':
