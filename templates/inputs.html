@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
 <br>
-<script src="{{ url_for('static/js', filename='main.js') }}"></script>
-<script src="{{ url_for('static/js', filename='preview.js') }}"></script>
+
 {% block caption_content %}
     <br>
     <div class="row">
-        <h4 class="gray">Caption to meme</h4>
+        <h4 class="text-muted">Caption to meme</h4>
     </div>
     <div class="container mt-5">
         <div class="row justify-content-center">
@@ -20,12 +19,7 @@
 
                         <!-- Image preview area -->
                         <div id="preview-container" class="d-none">
-                            <h5 class="text-muted">Image Preview:</h5>
-                            <script>
-                                $("#image_input").iPreview();
-                            </script>
-                            view raw
-
+                            <img id="preview-image" src="" alt="Image Preview">
                         </div>
 
                         <!-- Submit button -->
@@ -40,36 +34,6 @@
 
     <div class="row">
 
-        <div id="explore_text" class="col-md-4">
-            <div id="edit_inputs_div">
-                Image to Meme<br>
-                <input type="file" id="image_input" rows="2" cols="40">
-                <br>
-                <button id="submit_meme_btn" type="button">Submit</button>
-            </div>
-            <div id="show_headline_div">
-                <div id="show_headline"></div>
-                <div id="show_summary"></div>
-                <button id="edit_headline_btn" type="button">Edit</button>
-            </div>
-        </div>
-
-        <div id="keywords_to_select" class="col-md-4">
-            Keywords
-            <button type="button" id="get_keywords">Get Keywords</button>
-            <div id="display_keywords">
-
-            </div>
-        </div>
-
-
-        <div id="see_generations" class="col-md-4">
-            See Images
-            <button id="get_images_headline_btn" type="button">Get images for headline</button>
-            <div class="row" id="gallery">
-                <!-- <img src="static/generated_images/Santo-1673729232/Santo-1673729232-0.png"> -->
-            </div>
-        </div>
     </div>
 
 
