@@ -9,6 +9,10 @@
     cursor:default;*/
 }
 
+.gray {
+  color: #6e6e6e; !important;
+}
+
 /*
 Waiting Ajax stuff
 */
