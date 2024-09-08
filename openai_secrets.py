@@ -1,2 +1,0 @@
-global SECRET_KEY
-SECRET_KEY = "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"

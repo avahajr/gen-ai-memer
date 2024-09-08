@@ -1,58 +1,68 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <link rel="icon" href="data:,">
+    <link rel="icon" href="data:,">
 
-<!-- jquery -->
-  <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
-  <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>  
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <!-- jquery -->
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 
-  <link rel="stylesheet" href="{{url_for('static', filename='main.css')}}">
+    <title>AI Memer</title>
+</head>
+<body>
 
-    <title>AI News Art</title>
-  </head>
-  <body>
-    
-    
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="/">Meme</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+<!-- Tabs for navigation -->
+<br>
+<div class="container">
+    <h1>AI Memer</h1>
+    <p>Generate a meme fast before the group chat changes the subject!</p>
+    <nav>
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="caption-tab" data-toggle="tab" href="#caption" role="tab">Caption2Meme</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="meme-tab" data-toggle="tab" href="#meme" role="tab">Meme2Caption</a>
+            </li>
+        </ul>
+    </nav>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-     <li class="nav-item ">
-        <!-- <a class="nav-link" href="/add">Add <span class="sr-only"></span></a> -->
-      </li>
-    </ul>
-  
+    <!-- Tab content -->
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="caption" role="tabpanel" aria-labelledby="caption-tab">
+            <div id="spinner-div" class="pt-5">
+                <div class="spinner-border text-primary" role="status">
+                </div>
+            </div>
+            <div class="container-fluid">
+                {% block caption_content %}
+                    <!-- Content for "Caption this Meme" -->
+                {% endblock %}
+            </div>
+        </div>
 
-  </div>
-</nav>
-
-    <div id="spinner-div" class="pt-5">
-      <div class="spinner-border text-primary" role="status">
-      </div>
+        <div class="tab-pane fade" id="meme" role="tabpanel" aria-labelledby="meme-tab">
+            <div id="spinner-div" class="pt-5">
+                <div class="spinner-border text-primary" role="status">
+                </div>
+            </div>
+            <div class="container-fluid">
+                {% block meme_content %}
+                    <!-- Content for "Meme this Caption" -->
+                {% endblock %}
+            </div>
+        </div>
     </div>
-
-    <div class="container-fluid">   
-        {% block content %}
-        {% endblock %}
-    </div>
-
-  </body>
+</div>
+</body>
 </html>
-
-
-
-

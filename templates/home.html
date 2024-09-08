@@ -231,7 +231,7 @@
                 let id = item["id"]
                 let is_deleted = item["is_deleted"]
                 
-                if(is_deleted!="true"){
+                if(is_deleted!=="true"){
                     let prompt = item["prompt"]
                     let url = item["url"]
 
@@ -247,14 +247,14 @@
     <div class="row">
 
         <div id="explore_text" class="col-md-4" >
-            <div id="edit_headline_div">                
-                    Headline<br>
-                    <textarea id="headline_input" rows="2" cols="40"></textarea>
+            <div id="edit_inputs_div">
+                    Image to Meme<br>
+                    <input type="file" id="image_input" rows="2" cols="40">
                     <br>
-                    Summary<br>
-                    <textarea id="summary_input" rows="4" cols="40"></textarea>
+                    Caption to Meme<br>
+                    <textarea id="image_caption_input" rows="4" cols="40"></textarea>
                     <br>
-                    <button id="submit_headline_btn" type="button">Submit</button>                
+                    <button id="submit_meme_btn" type="button">Submit</button>
             </div>
             <div id="show_headline_div">
                     <div id="show_headline" ></div>
