@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 from openai_secrets import SECRET_KEY
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads/'  # Ensure this directory exists
+app.config['UPLOAD_FOLDER'] = 'static/uploads/'  # Ensure this directory exists
 
 
 def encode_image(image_path):
@@ -41,7 +41,7 @@ def upload_image():
 
         response = get_caption_from_gpt(file_path)
 
-        return jsonify({'image': filename, 'gpt-response': response})
+        return jsonify({'file-path': file_path, 'gpt-response': response})
 
     return jsonify({'error': 'File type not allowed'}), 400
 
@@ -80,4 +80,5 @@ def get_caption_from_gpt(file_path: str):
     return response.json()['choices'][0]['message']['content']
 
 if __name__ == '__main__':
+    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     app.run(debug=True)
