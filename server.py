@@ -1,12 +1,17 @@
 import base64
 import os
+import urllib.request
 
 import requests
+from PIL import Image
 from flask import Flask, request, jsonify, render_template
 from openai import OpenAI
 from werkzeug.utils import secure_filename
 
 from openai_secrets import SECRET_KEY
+
+client = OpenAI(api_key=SECRET_KEY)
+num_images = 1
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'  # Ensure this directory exists
@@ -31,23 +36,34 @@ def home():
 def get_meme_from_caption():
     caption = dict(request.json)['caption']
 
-    # image_url = get_image_from_gpt(caption)
-    image_url = "static/uploads/Screenshot_2024-07-01_at_3.44.25_PM.png"
+    image_url = get_image_from_gpt(caption)
+    # image_url = "static/uploads/Screenshot_2024-07-01_at_3.44.25_PM.png"
     return {"image_url": image_url}
 
 
 def get_image_from_gpt(caption: str):
-    client = OpenAI()
+    global num_images
+
     response = client.images.generate(
         model="dall-e-3",
-        prompt=f"Make a reaction image for this caption: {caption}",
+        prompt=f"Make a reaction image (meme) for this caption: {caption}. DON'T INCLUDE THE CAPTION IN THE PHOTO.",
         size="1024x1024",
         quality="standard",
         n=1,
     )
 
-    image_url = response.data[0].url
-    return image_url
+    def download_img(url, save_as):
+        urllib.request.urlretrieve(url, save_as)
+        new_img = Image.open(save_as)
+        new_img = new_img.convert("RGBA")
+        new_img.save(save_as)
+        return save_as
+
+    image_path = download_img(response.data[0].url,
+                              os.path.join(app.config['UPLOAD_FOLDER'], f"dall-e_{str(num_images)}.png"))
+    num_images += 1
+
+    return image_path
 
 
 @app.route("/upload_image_for_captioning", methods=["POST"])
@@ -65,16 +81,17 @@ def upload_image_for_captioning():
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         image.save(file_path)
 
-        response = get_caption_from_gpt(file_path)
+        response = get_caption_from_gpt(file_path)["generated_caption"]
 
         return jsonify({'file-path': file_path, 'gpt-response': response})
 
     return jsonify({'error': 'File type not allowed'}), 400
 
 
-def get_caption_from_gpt(file_path: str):
+@app.route("/get_caption/<file_path>", methods=["GET"])
+def get_caption_from_gpt(file_path: str) -> dict:
     base64_image = encode_image(file_path)
-    headers = {
+    headers= {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {SECRET_KEY}"
     }
@@ -102,9 +119,37 @@ def get_caption_from_gpt(file_path: str):
     }
 
     response = requests.post("https://api.openai.com/v1/chat/completions", headers=headers, json=payload)
-    return response.json()['choices'][0]['message']['content']
+    return {"generated_caption": response.json()['choices'][0]['message']['content']}
+
+
+@app.route("/refine_image", methods=["POST"])
+def refine_image():
+    data = request.json
+    refine_input = data['meme_refine_input']
+    img_url = data['img_url']
+    provided_caption = data['provided_caption']
+
+    new_image = get_gpt_image_refinement(img_url, provided_caption, refine_input)
+
+    return jsonify({'image_url': new_image, 'caption': provided_caption})
+
+
+def get_gpt_image_refinement(img_path: str, caption: str, feedback: str) -> str:
+    global num_images
+
+    image_response = client.images.edit(
+        model="dall-e-2",
+        image=open(img_path, "rb"),
+        prompt=f"This is the reaction image associated with the caption: {caption}. Change the image to match this feedback: {feedback}. DON'T INCLUDE THE CAPTION IN THE PHOTO.",
+        n=1,
+        size="1024x1024"
+    )
+    new_image_url = image_response.data[0].url
+
+    num_images += 1
+    return new_image_url
 
 
 if __name__ == '__main__':
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    app.run(debug=True)
+    app.run(debug=True, port=8921)

@@ -14,8 +14,9 @@
 }
 
 #result-placeholder{
-  background-color: rgba(230, 230, 230, 0.38) !important;
+  /*background-color: rgba(230, 230, 230, 0.38) !important;*/
   border-radius: 10px;
+  border: 3px lightgrey dashed;
   display: flex;
   justify-content: center;
   align-items: center;
