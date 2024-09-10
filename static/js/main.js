@@ -3,6 +3,7 @@ $(document).ready(function () {
         $("#result-img").attr("src", '').hide()
 
         let spinner = $("#spinner-div")
+        let spinner_desc = $("#spinner-desc")
         let feedback = $("#feedback")
         let placeholder = $("#result-placeholder")
         let result = $("#result-card")
@@ -33,9 +34,9 @@ $(document).ready(function () {
 
         function get_image_from_caption() {
             $("#generated-meme").hide()
-            $("#provided-caption").val("")
-
-            let caption = $("#caption_input").val().trim(); // Trim to remove extra spaces
+            $("#provided-caption").text("")
+            let caption_input_element = $("#caption_input")
+            let caption = caption_input_element.val().trim(); // Trim to remove extra spaces
 
             if (caption === "") {
                 console.log("Caption is empty!");
@@ -44,6 +45,7 @@ $(document).ready(function () {
             }
 
             spinner.show()
+            spinner_desc.text("generating image...")
 
             $.ajax({
                 url: '/get_meme_from_caption', method: 'POST', contentType: 'application/json',  // Specify JSON content type
@@ -56,6 +58,7 @@ $(document).ready(function () {
                     result.show()
                     feedback.show()
                     placeholder.hide()
+                    caption_input_element.val("")
                 }, error: function (xhr, status, error) {
                     console.log(xhr.responseText)
                     spinner.hide()
@@ -67,9 +70,13 @@ $(document).ready(function () {
 
         function refine_meme() {
             let img_url = $("#generated-meme").attr("src")
-            let provided_caption = $("#provided-caption").val()
-            let meme_refine_input = $("#meme-refiner").val()
+            let provided_caption = $("#provided-caption").text()
+
+            let meme_refiner_input_element = $("#meme-refiner")
+            let meme_refine_input = meme_refiner_input_element.val()
+
             spinner.show()
+            spinner_desc.text("refining image...")
             console.log("sending over:", JSON.stringify({
                 img_url: img_url,
                 provided_caption: provided_caption,
@@ -89,14 +96,17 @@ $(document).ready(function () {
                 success: function (image_response) {
                     console.log("got image response", image_response)
                     console.log("generating new caption...")
+                    spinner_desc.text("refining caption...")
+                    $("#generated-meme").attr("src", image_response["image_url"]).show()
+                    meme_refiner_input_element.val("")
                     $.ajax({
-                        url: `/get_caption/{response['image_url']}`,
-                        method: "GET",
+                        url: "/refine_caption",
+                        method: "POST",
                         contentType: 'application/json',
+                        data: JSON.stringify(image_response),
                         success: function (caption_response) {
                             console.log("got caption response", caption_response)
-                            $("#generated-meme").attr("src", image_response["image_url"]).show()
-                            $("#provided-caption").val(caption_response["generated_caption"]).show()
+                            $("#provided-caption").text(caption_response["caption"]).show()
                             spinner.hide()
                             result.show()
                             feedback.show()
@@ -133,7 +143,7 @@ $(document).ready(function () {
                     success: function (response) {
                         console.log(response);
                         $("#result-img").attr("src", response['file-path']).show()
-                        $("#generated-caption").append(response["gpt-response"]);
+                        $("#generated-caption").text(response["gpt-response"]);
                         placeholder.hide()
                         spinner.hide()
                         result.show()

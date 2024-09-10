@@ -41,6 +41,14 @@ def get_meme_from_caption():
     return {"image_url": image_url}
 
 
+def download_img(url, save_as):
+    urllib.request.urlretrieve(url, save_as)
+    new_img = Image.open(save_as)
+    new_img = new_img.convert("RGBA")
+    new_img.save(save_as)
+    return save_as
+
+
 def get_image_from_gpt(caption: str):
     global num_images
 
@@ -51,13 +59,6 @@ def get_image_from_gpt(caption: str):
         quality="standard",
         n=1,
     )
-
-    def download_img(url, save_as):
-        urllib.request.urlretrieve(url, save_as)
-        new_img = Image.open(save_as)
-        new_img = new_img.convert("RGBA")
-        new_img.save(save_as)
-        return save_as
 
     image_path = download_img(response.data[0].url,
                               os.path.join(app.config['UPLOAD_FOLDER'], f"dall-e_{str(num_images)}.png"))
@@ -88,10 +89,19 @@ def upload_image_for_captioning():
     return jsonify({'error': 'File type not allowed'}), 400
 
 
-@app.route("/get_caption/<file_path>", methods=["GET"])
-def get_caption_from_gpt(file_path: str) -> dict:
+@app.route("/refine_caption", methods=["POST"])
+def refine_caption():
+    data = request.json
+    image_path = data["image_url"]
+    feedback = data["meme_refine_input"]
+
+    new_caption = get_caption_from_gpt(image_path, feedback)["generated_caption"]
+
+    return jsonify({'image_url': image_path, 'caption': new_caption, "meme_refine_input": feedback})
+
+def get_caption_from_gpt(file_path: str, feedback="") -> dict:
     base64_image = encode_image(file_path)
-    headers= {
+    headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {SECRET_KEY}"
     }
@@ -104,7 +114,7 @@ def get_caption_from_gpt(file_path: str) -> dict:
                 "content": [
                     {
                         "type": "text",
-                        "text": "Write a silly meme caption for this image."
+                        "text": f"Write a silly meme caption for this image. {feedback}."
                     },
                     {
                         "type": "image_url",
@@ -131,7 +141,7 @@ def refine_image():
 
     new_image = get_gpt_image_refinement(img_url, provided_caption, refine_input)
 
-    return jsonify({'image_url': new_image, 'caption': provided_caption})
+    return jsonify({'image_url': new_image, 'caption': provided_caption, "meme_refine_input": refine_input})
 
 
 def get_gpt_image_refinement(img_path: str, caption: str, feedback: str) -> str:
@@ -144,8 +154,9 @@ def get_gpt_image_refinement(img_path: str, caption: str, feedback: str) -> str:
         n=1,
         size="1024x1024"
     )
-    new_image_url = image_response.data[0].url
 
+    new_image_url = download_img(image_response.data[0].url,
+                                 os.path.join(app.config.get('UPLOAD_FOLDER'), f"dall-e_{str(num_images)}.png"))
     num_images += 1
     return new_image_url
 
