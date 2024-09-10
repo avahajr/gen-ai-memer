@@ -3,8 +3,8 @@ $(document).ready(function () {
         $("#result-img").attr("src", '').hide()
 
         let spinner = $("#spinner-div")
-        let feedback = $(".feedback")
-        let placeholder = $(".placeholder")
+        let feedback = $("#feedback")
+        let placeholder = $("#result-placeholder")
         let result = $("#result-card")
 
         result.hide()
