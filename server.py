@@ -132,7 +132,7 @@ def get_caption_from_gpt(file_path: str, feedback="") -> dict:
     return {"generated_caption": response.json()['choices'][0]['message']['content']}
 
 
-@app.route("/refine_image", methods=["POST"])
+@app.route("/refine_image", methods=["PUT"])
 def refine_image():
     data = request.json
     refine_input = data['meme_refine_input']

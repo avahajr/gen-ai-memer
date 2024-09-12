@@ -86,7 +86,7 @@ $(document).ready(function () {
 
             $.ajax({
                 url: "/refine_image",
-                method: "POST",
+                method: "PUT",
                 contentType: 'application/json',
                 data: JSON.stringify({
                     img_url: img_url,
