@@ -1,4 +1,5 @@
 import base64
+import json
 import os
 import urllib.request
 
@@ -11,7 +12,9 @@ from werkzeug.utils import secure_filename
 from openai_secrets import SECRET_KEY
 
 client = OpenAI(api_key=SECRET_KEY)
-num_images = 1
+num_images = 2
+
+memes:list[dict[str:str]] = json.load(open('static/memes.json'))
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'  # Ensure this directory exists
@@ -32,16 +35,7 @@ def home():
     return render_template('tab_contents.html')
 
 
-@app.route("/get_meme_from_caption", methods=['POST'])
-def get_meme_from_caption():
-    caption = dict(request.json)['caption']
-
-    image_url = get_image_from_gpt(caption)
-    # image_url = "static/uploads/Screenshot_2024-07-01_at_3.44.25_PM.png"
-    return {"image_url": image_url}
-
-
-def download_img(url, save_as):
+def save_image_locally(url, save_as):
     urllib.request.urlretrieve(url, save_as)
     new_img = Image.open(save_as)
     new_img = new_img.convert("RGBA")
@@ -51,6 +45,7 @@ def download_img(url, save_as):
 
 def get_image_from_gpt(caption: str):
     global num_images
+    global memes
 
     response = client.images.generate(
         model="dall-e-3",
@@ -60,17 +55,22 @@ def get_image_from_gpt(caption: str):
         n=1,
     )
 
-    image_path = download_img(response.data[0].url,
-                              os.path.join(app.config['UPLOAD_FOLDER'], f"dall-e_{str(num_images)}.png"))
+    image_path = save_image_locally(response.data[0].url,
+                                    os.path.join(app.config['UPLOAD_FOLDER'], f"dall-e_{str(num_images)}.png"))
     num_images += 1
 
     return image_path
 
 
-@app.route("/upload_image_for_captioning", methods=["POST"])
-def upload_image_for_captioning():
+@app.route("/add_meme", methods=["POST"])
+def add_meme():
     if 'image' not in request.files:
-        return jsonify({'error': 'No file part in the request'}), 400
+        # generate from caption
+        caption = dict(request.json)['caption']
+        image_url = get_image_from_gpt(caption)
+        new_meme = {"id": num_images, "caption": caption, "image_url": image_url}
+        memes.append(new_meme)
+        return new_meme
 
     image = request.files['image']
 
@@ -155,8 +155,8 @@ def get_gpt_image_refinement(img_path: str, caption: str, feedback: str) -> str:
         size="1024x1024"
     )
 
-    new_image_url = download_img(image_response.data[0].url,
-                                 os.path.join(app.config.get('UPLOAD_FOLDER'), f"dall-e_{str(num_images)}.png"))
+    new_image_url = save_image_locally(image_response.data[0].url,
+                                       os.path.join(app.config.get('UPLOAD_FOLDER'), f"dall-e_{str(num_images)}.png"))
     num_images += 1
     return new_image_url
 

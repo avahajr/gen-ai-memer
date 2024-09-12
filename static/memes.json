@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "meme_image": "static/uploads/dall-e_1.png",
+    "image_url": "static/uploads/dall-e_1.png",
     "caption": "Me on Mondays"
   }
 ]

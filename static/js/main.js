@@ -48,7 +48,7 @@ $(document).ready(function () {
             spinner_desc.text("generating image...")
 
             $.ajax({
-                url: '/get_meme_from_caption', method: 'POST', contentType: 'application/json',  // Specify JSON content type
+                url: '/add_meme', method: 'POST', contentType: 'application/json',  // Specify JSON content type
                 data: JSON.stringify({caption: caption}),  // Convert data to JSON string
                 success: function (response) {
                     console.log("got response", response)
@@ -135,7 +135,7 @@ $(document).ready(function () {
                 let formData = new FormData();
                 formData.append("image", image); // Append the file to FormData
                 $.ajax({
-                    url: "/upload_image_for_captioning",
+                    url: "/add_meme",
                     type: "POST",
                     data: formData,
                     contentType: false,
